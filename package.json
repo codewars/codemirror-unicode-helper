@@ -1,0 +1,39 @@
+{
+  "name": "@codewars/codemirror-unicode-helper",
+  "version": "0.0.1",
+  "description": "CodeMirror extension for entering Unicode characters using LaTeX-like abbreviations",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "files": [
+    "lib/*",
+    "umd/*"
+  ],
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:umd && npm run build:umd:min",
+    "build:cjs": "tsc --target es2020 --module commonjs --outDir lib/cjs",
+    "build:esm": "tsc --target es2020 --module es2020 --outDir lib/esm",
+    "build:umd": "rollup lib/esm/index.js --format umd --name CodeMirrorUnicodeHelper -o umd/codemirror-unicode-helper.js",
+    "build:umd:min": "terser umd/codemirror-unicode-helper.js -o umd/codemirror-unicode-helper.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codewars/codemirror-unicode-helper.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codewars/codemirror-unicode-helper/issues"
+  },
+  "homepage": "https://github.com/codewars/codemirror-unicode-helper#readme",
+  "peerDependencies": {
+    "codemirror": "5.x"
+  },
+  "devDependencies": {
+    "@types/codemirror": "0.0.100",
+    "codemirror": "^5.58.3",
+    "rollup": "^2.33.3",
+    "terser": "^5.5.0",
+    "typescript": "^4.1.2"
+  }
+}

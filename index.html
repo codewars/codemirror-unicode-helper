@@ -1,0 +1,111 @@
+<!doctype html>
+<head>
+<title>CodeMirror Unicode Helper Demo</title>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="https://unpkg.com/mvp.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/hint/show-hint.min.css">
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.7.3/dist/alpine.min.js" defer></script>
+</head>
+
+<body>
+
+<header>
+  <h1>CodeMirror Unicode Helper</h1>
+  <div><a href="https://github.com/codewars/codemirror-unicode-helper">@codewars/codemirror-unicode-helper</a></div>
+</header>
+
+<main x-data="demo()" x-init="$watch('enabled', v => toggleUnicodeHelper(v)); enabled = true">
+<section>
+<form>
+
+<textarea id="code">
+function sphere_vol(r)
+    return 4/3*π*r^3
+end
+</textarea>
+
+<fieldset style="margin-top: 2rem;">
+  <label><input type="checkbox" x-model="enabled"> Use Unicode Helper</label>
+
+  <label for="keymap-select" style="display: inline-block">KeyMap</label>
+  <select id="keymap-select" x-on:change="setKeyMap($event.target.value)" style="display: inline-block; margin-left: 1rem;">
+    <option value="default" selected>Default</option>
+    <option value="sublime">Sublime Text</option>
+    <option value="vim">Vim</option>
+    <option value="emacs">Emacs</option>
+  </select>
+</fieldset>
+
+</form>
+</section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/hint/show-hint.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/mode/julia/julia.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/keymap/vim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/keymap/emacs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/keymap/sublime.min.js"></script>
+<script src="codemirror-unicode-helper.js"></script>
+<script>
+  const demo = () => {
+    const unicodeHelper = window.CodeMirrorUnicodeHelper.unicodeHelper;
+    CodeMirror.registerGlobalHelper(
+      "hint",
+      "unicode-helper",
+      (mode, cm) => true,
+      unicodeHelper
+    );
+
+    const editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      keyMap: "default",
+      mode: "julia",
+      indentUnit: 4,
+    });
+    editor.setSize(500, 200);
+
+    const autocompleteKeyMap = {
+      "\\": (cm) => {
+        cm.replaceSelection("\\");
+        cm.execCommand("autocomplete");
+      },
+    };
+
+    const hintOptions = {
+      extraKeys: {
+        // Complete with selected and insert space.
+        Space: (cm) => {
+          const active = cm.state.completionActive;
+          if (active) {
+            active.widget.pick();
+            cm.replaceSelection(" ");
+          }
+        },
+      },
+      // Use custom `closeCharacters` to allow text with ()[]{};:>,
+      // Note that this isn't documented.
+      closeCharacters: /[\s]/,
+      // Disable auto completing even if there's only one choice.
+      completeSingle: false,
+    };
+
+    return {
+      enabled: false,
+      setKeyMap(value) {
+        editor.setOption("keyMap", value);
+      },
+      toggleUnicodeHelper(value) {
+        if (value) {
+          editor.addKeyMap(autocompleteKeyMap);
+          editor.setOption("hintOptions", hintOptions);
+        } else {
+          editor.removeKeyMap(autocompleteKeyMap);
+          editor.setOption("hintOptions", undefined);
+        }
+      },
+    };
+  };
+</script>
+</body>

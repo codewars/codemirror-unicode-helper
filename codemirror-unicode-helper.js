@@ -48,15 +48,17 @@
         const to = editor.getCursor();
         const str = editor.getLine(to.line).slice(0, to.ch);
         const from = { line: to.line, ch: str.lastIndexOf("\\") };
-        const typed = editor.getRange(from, to);
+        const typed = editor.getRange({ line: from.line, ch: from.ch + 1 }, to);
         return {
             from,
             to,
-            list: filtered(pairs, typed, 10).map(([seq, sym]) => ({
-                text: sym,
-                displayText: `${sym} \\${seq}`,
-                hint: (cm) => cm.replaceRange(sym, from, to, "complete"),
-            })),
+            list: !typed
+                ? []
+                : filtered(pairs, typed, 10).map(([seq, sym]) => ({
+                    text: sym,
+                    displayText: `${sym} \\${seq}`,
+                    hint: (cm) => cm.replaceRange(sym, from, to, "complete"),
+                })),
         };
     };
 

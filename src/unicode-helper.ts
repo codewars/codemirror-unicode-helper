@@ -10,15 +10,18 @@ export const unicodeHelperWith = (pairs: Pair[]) => (editor: Editor): Hints => {
   const to = editor.getCursor();
   const str = editor.getLine(to.line).slice(0, to.ch);
   const from = { line: to.line, ch: str.lastIndexOf("\\") };
-  const typed = editor.getRange(from, to);
+  // Exclude the backslash when searching
+  const typed = editor.getRange({ line: from.line, ch: from.ch + 1 }, to);
   return {
     from,
     to,
     // Return at most 10 candidates. We can make this configurable if needed.
-    list: filtered(pairs, typed, 10).map(([seq, sym]) => ({
-      text: sym,
-      displayText: `${sym} \\${seq}`,
-      hint: (cm: Editor) => cm.replaceRange(sym, from, to, "complete"),
-    })),
+    list: !typed
+      ? []
+      : filtered(pairs, typed, 10).map(([seq, sym]) => ({
+          text: sym,
+          displayText: `${sym} \\${seq}`,
+          hint: (cm: Editor) => cm.replaceRange(sym, from, to, "complete"),
+        })),
   };
 };

@@ -1,6 +1,6 @@
 {
   "name": "@codewars/codemirror-unicode-helper",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "CodeMirror extension for entering Unicode characters using LaTeX-like abbreviations",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",

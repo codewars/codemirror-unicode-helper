@@ -5,3 +5,4 @@ import { defaultPairs } from "./default";
 export const unicodeHelper = unicodeHelperWith(defaultPairs);
 // Export the function to create helper with custom pairs.
 export { unicodeHelperWith };
+export type { Pair } from "./unicode-helper";
